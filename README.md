@@ -28,15 +28,15 @@ Download files from this repository, (the `.ps1` script and the `.bat` file) and
 ### 2. Path Verification
 Open the `ConvertEmails.ps1` file in Notepad and ensure the folder path at the top matches your actual folder:
 powershell
-$folderPath = "C:\MyEmails"  DEFAULT PATH
+$folderPath = "C:\MyEmails"  is the DEFAULT PATH.  Feel free to change this if you choose.
 
 ### 3. Execute
 1.	Ensure the Microsoft Outlook desktop app is completely closed to prevent security memory conflicts.
 2.	Double-click the Launch.bat file.
 3.	Watch the terminal convert your files! Your new files will be safely deposited in a new Converted_Files sub-directory.
-⚖️ License
-This project is open-source and free to use, modify, and share. Pay it forward!
 
+## ⚖️ License
+This project is open-source and free to use, modify, and share. Pay it forward!
 
 ## ☕ Support the Project
 
