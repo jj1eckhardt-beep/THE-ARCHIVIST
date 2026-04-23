@@ -32,7 +32,7 @@ This project was born out of frustration with finding only paid, third-party sof
  **Paperclip Quick-Links:** For HTML archives, green paperclip icons (📎) provide one-click access to extracted PDF attachments.
  
  **Universal Compatibility:** Self-contained and ultra-portable. The Index uses pure HTML/JS, meaning it works in any browser, on any device, forever—no internet connection or special software needed.
-
+<img width="1350" height="1005" alt="image" src="https://github.com/user-attachments/assets/c431c20b-2a5c-4f12-8f85-fc9aecf4b151" />
 
 ## 📋 Prerequisites
  Because this script currently uses COM object automation to tap into native desktop applications, you must have the following installed on your Windows machine:
@@ -53,12 +53,14 @@ I encourage you to open the files in Notepad and inspect the code first before e
 
 ## 2. Open the UI
 Open the Launcher.bat file (It handles permissions and launching the UI). 
+<img width="1336" height="820" alt="image" src="https://github.com/user-attachments/assets/5c7d9a4a-75e2-4456-be00-50198fe1ee99" />
 
 ## 3. Execute
 1.	Use MASTER and ARCHIVE buttons to set the desired folder paths.
 2.	Use Radio buttons and Checkboxes to configure the desired output format and selections.
 3.	Start Archival Process, ABORT will pause, Start will resume and continue until finished.
 4.	Reset clears selections.
+<img width="1341" height="1028" alt="image" src="https://github.com/user-attachments/assets/0db0476c-d83b-4773-9839-f99b819b870f" />
 
 ## ⚖️ License
 This project is licensed under the MIT License and is free to download, share, and modify.
