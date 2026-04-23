@@ -62,9 +62,10 @@ Open the Launcher.bat file (It handles permissions and launching the UI).
 4.	Reset clears selections.
 <img width="1341" height="1028" alt="image" src="https://github.com/user-attachments/assets/0db0476c-d83b-4773-9839-f99b819b870f" />
 
-## ⚖️ License
-This project is licensed under the MIT License and is free to download, share, and modify.
-Copyright (c) 2024 jj1eckhardt
+## ⚖️ License & Disclaimer
+This project is licensed under the MIT License.
+
+CAUTION: This software is still a work in progress and under development. Always backup your Emails. The author is not responsible for data loss or hardware issues.
 
 ## ☕ Support the Project
 If "THE ARCHIVIST" saved you some time or made your conversion easier, feel free to help keep the gears turning!
