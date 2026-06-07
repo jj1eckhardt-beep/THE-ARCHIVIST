@@ -10,8 +10,8 @@
 # ==============================================================================
 # 1. Manual Identity (Change these for new releases)
 $global:ScriptTitle1 = "THE ARCHIVIST"   # What people see in the UI
-$global:Cvers = "v2.2.0"                 # The version number
-$global:BuildDate = "2026.05.17"         # The build timestamp
+$global:Cvers = "v2.2.1"                 # The version number
+$global:BuildDate = "2026.06.07"         # The build timestamp
 $global:RepoName = "The-Archivist"       # For GitHub link consistency
 $global:RepoOwner = "jj1eckhardt-beep"
 
@@ -254,7 +254,7 @@ $global:lblGitHub.Location = New-Object Drawing.Point(20, 480)
 $global:lblGitHub.Size = New-Object Drawing.Size(450, 20) # Constrained width
 $global:lblGitHub.LinkColor = [System.Drawing.Color]::Gray
 $global:lblGitHub.Font = New-Object Drawing.Font("Segoe UI", 8, [System.Drawing.FontStyle]::Italic)
-$global:lblGitHub.Add_LinkClicked({ [System.Diagnostics.Process]::Start("https://github.com/$global:RepoOwner/$global:RepoName") })
+$global:lblGitHub.Add_LinkClicked({ [System.Diagnostics.Process]::Start("https://github.com/$($global:RepoOwner)/$($global:RepoName)/releases/latest") })
 
 # --- 1.7. SUPPORT WIDGET (Symmetrical Static + Link) ---
 # 1. The Static Text (Gray)
@@ -822,33 +822,120 @@ function Invoke-ArchivalProcess {
 # 4.5 Check4Update Set your current version (Update this every time you release!)
 function Test-Update {
     try {
-        $apiUrl = "https://github.com"
-        # Identify the script to GitHub to avoid silent blocks
-        $headers = @{ "User-Agent" = "The-Archivist-Script" }
-        $latestRelease = Invoke-RestMethod -Uri $apiUrl -Method Get -Headers $headers -ErrorAction Stop
+        $ping = New-Object System.Net.NetworkInformation.Ping
+        $reply = $ping.Send("1.1.1.1", 1000)
+        if ($reply.Status -ne "Success") { return }
+    } catch { return }
 
-        # 1. CLEAN THE STRINGS
-        $latestStr = $latestRelease.tag_name -replace '[^0-9.]', ''
-        $currentStr = $global:Cvers -replace '[^0-9.]', ''
-
-        # 2. SANITY CHECK: If either is empty, don't try to convert (prevents the crash)
-        if ([string]::IsNullOrWhiteSpace($latestStr) -or [string]::IsNullOrWhiteSpace($currentStr)) {
+    try {
+        $apiUrl = "https://api.github.com/repos/$($global:RepoOwner)/$($global:RepoName)/releases/latest"
+        $userAgent = "THE-ARCHIVIST-Script"
+        
+        $release = Invoke-RestMethod -Uri $apiUrl -Method Get -UserAgent $userAgent -ContentType "application/json" -ErrorAction Stop 
+        
+        if ($null -eq $release) { return } 
+        
+        $rawTagName = $release.tag_name
+        
+        $latestStr = $rawTagName -replace '[^0-9.]', '' 
+        $currentStr = $global:Cvers -replace '[^0-9.]', '' 
+        
+        if ([string]::IsNullOrWhiteSpace($latestStr) -or [string]::IsNullOrWhiteSpace($currentStr)) { 
             return 
+        } 
+        
+        if ([version]$latestStr -gt [version]$currentStr) { 
+            # Turn the GitHub link CYAN to indicate an update is available
+            $global:lblGitHub.LinkColor = [System.Drawing.Color]::Orange
+            
+            Add-Type -AssemblyName System.Windows.Forms 
+            Add-Type -AssemblyName System.Drawing
+            
+            $downloadUrl = "https://github.com/$($global:RepoOwner)/$($global:RepoName)/releases/latest"
+            
+            # Create a custom form with clickable link
+            $form = New-Object System.Windows.Forms.Form
+            $form.Text = "Update Available"
+            $form.Width = 450
+            $form.Height = 210
+            $form.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
+            $form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedDialog
+            $form.MaximizeBox = $false
+            $form.MinimizeBox = $false
+            
+            # Add title label
+            $titleLabel = New-Object System.Windows.Forms.Label
+            $titleLabel.Text = "A new version of $($global:ScriptTitle1) ($rawTagName) is available!"
+            $titleLabel.Location = New-Object System.Drawing.Point(20, 20)
+            $titleLabel.Width = 410
+            $titleLabel.Height = 30
+            $titleLabel.Font = New-Object System.Drawing.Font("Arial", 10, [System.Drawing.FontStyle]::Bold)
+            $form.Controls.Add($titleLabel)
+            
+            # Add message with clickable link
+            $messagePanel = New-Object System.Windows.Forms.Panel
+            $messagePanel.Location = New-Object System.Drawing.Point(20, 60)
+            $messagePanel.Width = 410
+            $messagePanel.Height = 50
+            $messagePanel.AutoSize = $true
+            
+            # "To Download: " text
+            $downloadLabel = New-Object System.Windows.Forms.Label
+            $downloadLabel.Text = "To Download: "
+            $downloadLabel.Location = New-Object System.Drawing.Point(0, 0)
+            $downloadLabel.Width = 100
+            $downloadLabel.Height = 25
+            $downloadLabel.AutoSize = $true
+            $messagePanel.Controls.Add($downloadLabel)
+            
+            # "Click Here" link (keep dark blue)
+            $clickLink = New-Object System.Windows.Forms.LinkLabel
+            $clickLink.Text = "Click Here"
+            $clickLink.Location = New-Object System.Drawing.Point(90, 0)
+            $clickLink.Width = 100
+            $clickLink.Height = 25
+            $clickLink.AutoSize = $true
+            $clickLink.LinkColor = [System.Drawing.Color]::Blue
+            $clickLink.add_LinkClicked({
+                [System.Diagnostics.Process]::Start($downloadUrl)
+            })
+            $messagePanel.Controls.Add($clickLink)
+            
+            $form.Controls.Add($messagePanel)
+            
+            # Add OK button
+            $okButton = New-Object System.Windows.Forms.Button
+            $okButton.Text = "OK"
+            $okButton.Location = New-Object System.Drawing.Point(185, 115)
+            $okButton.Width = 80
+            $okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
+            $form.Controls.Add($okButton)
+            $form.AcceptButton = $okButton
+            
+            # Add "Check for Updates" link at bottom left (blue reminder)
+            $updateLink = New-Object System.Windows.Forms.LinkLabel
+            $updateLink.Text = "Check for Updates"
+            $updateLink.Location = New-Object System.Drawing.Point(20, 175)
+            $updateLink.Width = 150
+            $updateLink.Height = 25
+            $updateLink.AutoSize = $true
+            $updateLink.LinkColor = [System.Drawing.Color]::Blue
+            $updateLink.add_LinkClicked({
+                [System.Diagnostics.Process]::Start($downloadUrl)
+            })
+            $form.Controls.Add($updateLink)
+            
+            $form.ShowDialog() | Out-Null
         }
-
-        # 3. COMPARE
-        if ([version]$latestStr -gt [version]$currentStr) {
-            Add-Type -AssemblyName System.Windows.Forms
-            $msg = "A new version of $($global:ScriptTitle1) ($($latestRelease.tag_name)) is available!`n`nDownload: $($latestRelease.html_url)"
-            [System.Windows.Forms.MessageBox]::Show($msg, "Update Available", "OK", "Information")
+        else {
+            # User is on the latest version - turn the GitHub link back to GRAY
+            $global:lblGitHub.LinkColor = [System.Drawing.Color]::Gray
         }
-    }
-    catch {
-        # Fails silently so your app still opens!
-        Write-Debug "Update check failed: $($_.Exception.Message)"
-    }
+    } 
+    catch { 
+        Write-Debug "Update check failed: $($_.Exception.Message)" 
+    } 
 }
-
 
 # ==============================================================================
 # SECTION 5: EVENT WIRING (Connecting the Dots)

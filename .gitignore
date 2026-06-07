@@ -1,0 +1,38 @@
+# ==========================================
+# 1. BOT & ACCIDENTAL LEAK PREVENTION
+# ==========================================
+# Ignore local environment variables & config files containing keys
+.env
+*.env
+config.json
+secrets.*
+credentials/
+
+# Ignore local system paths that leak user usernames/folder structures
+*.suo
+*.user
+*.sln.docstates
+
+# ==========================================
+# 2. LOCAL DEV & SCRATCH FILES
+# ==========================================
+*scratch*
+*.tmp
+*.log
+*.bak
+
+# ==========================================
+# 3. WINDOWS OS CLEANUP
+# ==========================================
+Thumbs.db
+.DS_Store
+ehthumbs.db
+
+# ==========================================
+# 4. BUILD / OUTPUT ARTIFACTS
+# ==========================================
+# If you compile your scripts to executables or bundles, ignore the output folder
+bin/
+obj/
+dist/
+out/
